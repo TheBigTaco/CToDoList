@@ -24,8 +24,8 @@ namespace ToDoList.Tests
         {
           //Arrange, Act
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task firstTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
-          Task secondTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
+          Task firstTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task secondTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
 
           //Assert
           Assert.AreEqual(firstTask, secondTask);
@@ -36,7 +36,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
           testTask.Save();
 
           //Act
@@ -51,7 +51,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
           testTask.Save();
 
           //Act
@@ -69,7 +69,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
           testTask.Save();
 
           //Act
@@ -79,43 +79,107 @@ namespace ToDoList.Tests
           Assert.AreEqual(testTask, foundTask);
         }
 
+        // [TestMethod]
+        // public void GetTasks_RetrievesAllTasksWithCategory_TaskList()
+        // {
+        //   Category testCategory = new Category("Household chores");
+        //   testCategory.Save();
+        //
+        //   DateTime newDateTime = new DateTime(2016,12,31);
+        //   DateTime newSecondDateTime = new DateTime(2017,1,1);
+        //   Task firstTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+        //   firstTask.Save();
+        //   Task secondTask = new Task("Do the dishes", newSecondDateTime, newSecondDateTime.ToString());
+        //   secondTask.Save();
+        //
+        //
+        //   List<Task> testTaskList = new List<Task> {firstTask, secondTask};
+        //   List<Task> resultTaskList = testCategory.GetTasks();
+        //
+        //   CollectionAssert.AreEqual(testTaskList, resultTaskList);
+        // }
+
+        // [TestMethod]
+        // public void GetTasks_MakeSureListOrderedByDate_TaskList()
+        // {
+        //   Category testCategory = new Category("Household chores");
+        //   testCategory.Save();
+        //
+        //   DateTime newDateTime = new DateTime(2016,12,31);
+        //   DateTime newSecondDateTime = new DateTime(2015,1,1);
+        //   Task firstTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+        //   firstTask.Save();
+        //   Task secondTask = new Task("Do the dishes", newSecondDateTime, newSecondDateTime.ToString());
+        //   secondTask.Save();
+        //
+        //   List<Task> testTaskList = new List<Task> {secondTask, firstTask};
+        //   List<Task> resultTaskList = testCategory.GetTasks();
+        //
+        //   CollectionAssert.AreEqual(testTaskList, resultTaskList);
+        // }
+
         [TestMethod]
-        public void GetTasks_RetrievesAllTasksWithCategory_TaskList()
+        public void AddCategory_AddsCategoryToTask_CategoryList()
         {
-          Category testCategory = new Category("Household chores");
+          //Arrange
+          DateTime newDateTime = new DateTime(2016,12,31);
+          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          testTask.Save();
+
+          Category testCategory = new Category("Home stuff");
           testCategory.Save();
 
-          DateTime newDateTime = new DateTime(2016,12,31);
-          DateTime newSecondDateTime = new DateTime(2017,1,1);
-          Task firstTask = new Task("Mow the lawn", testCategory.GetId(), newDateTime, newDateTime.ToString());
-          firstTask.Save();
-          Task secondTask = new Task("Do the dishes", testCategory.GetId(), newSecondDateTime, newSecondDateTime.ToString());
-          secondTask.Save();
+          //Act
+          testTask.AddCategory(testCategory);
 
+          List<Category> result = testTask.GetCategories();
+          List<Category> testList = new List<Category>{testCategory};
 
-          List<Task> testTaskList = new List<Task> {firstTask, secondTask};
-          List<Task> resultTaskList = testCategory.GetTasks();
-
-          CollectionAssert.AreEqual(testTaskList, resultTaskList);
+          //Assert
+          CollectionAssert.AreEqual(testList, result);
         }
-
         [TestMethod]
-        public void GetTasks_MakeSureListOrderedByDate_TaskList()
+        public void GetCategories_ReturnsAllTaskCategories_CategoryList()
         {
-          Category testCategory = new Category("Household chores");
-          testCategory.Save();
-
+          //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          DateTime newSecondDateTime = new DateTime(2015,1,1);
-          Task firstTask = new Task("Mow the lawn", testCategory.GetId(), newDateTime, newDateTime.ToString());
-          firstTask.Save();
-          Task secondTask = new Task("Do the dishes", testCategory.GetId(), newSecondDateTime, newSecondDateTime.ToString());
-          secondTask.Save();
+          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          testTask.Save();
 
-          List<Task> testTaskList = new List<Task> {secondTask, firstTask};
-          List<Task> resultTaskList = testCategory.GetTasks();
+          Category testCategory1 = new Category("Home stuff");
+          testCategory1.Save();
 
-          CollectionAssert.AreEqual(testTaskList, resultTaskList);
+          Category testCategory2 = new Category("Work stuff");
+          testCategory2.Save();
+
+          //Act
+          testTask.AddCategory(testCategory1);
+          List<Category> result = testTask.GetCategories();
+          List<Category> testList = new List<Category> {testCategory1};
+
+          //Assert
+          CollectionAssert.AreEqual(testList, result);
+        }
+        [TestMethod]
+        public void Delete_DeletesTaskAssociationsFromDatabase_TaskList()
+        {
+          //Arrange
+          Category testCategory = new Category("Home stuff");
+          testCategory.Save();
+          DateTime newDateTime = new DateTime(2016,12,31);
+          string testDescription = "Mow the lawn";
+          Task testTask = new Task(testDescription, newDateTime, newDateTime.ToString());
+          testTask.Save();
+
+          //Act
+          testTask.AddCategory(testCategory);
+          testTask.Delete();
+
+          List<Task> resultCategoryTasks = testCategory.GetTasks();
+          List<Task> testCategoryTasks = new List<Task> {};
+
+          //Assert
+          CollectionAssert.AreEqual(testCategoryTasks, resultCategoryTasks);
         }
     }
 }

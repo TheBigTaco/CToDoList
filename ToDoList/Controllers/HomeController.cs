@@ -66,7 +66,7 @@ namespace ToDoList.Controllers
             string taskDescription = Request.Form["task-description"];
             DateTime dueDate = Convert.ToDateTime(Request.Form["task-due-date"]);
             string[] newDueDate = dueDate.GetDateTimeFormats('g');
-            Task newTask = new Task(taskDescription, Int32.Parse(Request.Form["category-id"]), dueDate, newDueDate[0]);
+            Task newTask = new Task(taskDescription, dueDate, newDueDate[0]);
             newTask.Save();
             List<Task> categoryTasks = selectedCategory.GetTasks();
             model.Add("tasks", categoryTasks);
